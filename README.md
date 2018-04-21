@@ -64,7 +64,7 @@ If there were no costs of transaction such as time and limited item slots, all i
 Studying an item's alignment allows one to make very safe profitable transactions. Knowing the alignment's stability (with data like the probability of being greater than 1 and the standard deviation of the alignment, which are given by functions in `pricesanalysis.py`) is especially helpful in planning large-scale alignment-based investments.
 
 ### Usage
-`dispalignment` gives detailed info on both alignments of an item, and shows a plot of the alignments across time.
+`dispalignment` gives detailed info on both alignments of an item, and shows a plot of the alignments over time.
 One useful detail it gives is the percentage of the time they are above 1, which is a good indicator of the consistency of the alignment.
 
 For instance, Eau has an A2 average of 1.33 and its A2 is greater than 1 about 89% of the time.
