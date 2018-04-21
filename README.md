@@ -3,7 +3,7 @@
 This is a personal project conducted over two months, powered by a price-retrieving bot I made for the online MMORPG Dofus.
 I used this bot to create a database of prices for 44 items, collected at 929 points in time.
 
-The database is stored in prices.hdf5 as a pandas DataFrame and looks like this:
+The database is stored in `prices.hdf5` as a pandas DataFrame and looks like this:
 
 |       Items         | Blé | Blé  | Blé   | Orge | Orge  | Orge   | Avoine | Avoine | Avoine |  ...   |
 |---------------------|-----|------|-------|------|-------|--------|--------|--------|--------|--------|
@@ -18,7 +18,7 @@ The items' names are in French, as this is the language I play the game in.
 
 The columns index is a `MultiIndex`, with the first level being the item and the second being the quantity. Each item can be sold in packs of 1, 10 or 100 at the choice of the seller and the prices for the 3 quantities are independent, although obviously strongly linked because of the obvious arbitrage opportunity a difference between them represents.
 
-pricesanalysis.py is the file where all of my data analysis functions for this database are coded. Here is a quick use guide for the most useful among them.
+`pricesanalysis.py` is the file where all of my data analysis functions for this database are coded. Here is a quick use guide for the most useful among them.
 ## disptails
 ```python
 disptails(size=10, withmeans=True, items=headers, database=prices)
