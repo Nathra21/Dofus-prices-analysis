@@ -54,7 +54,13 @@ This graph, given by using `curve('Eau')`, shows the (more common) opposite case
 ![Eau curve](eau_curve.png)
 In this case, since Eau (water) can only be harvested in small quantities at wells, most sellers only have them in small quantities. On the other hand, water is necessary for many potion recipes, which means that alchemists buy water in very large quantities. This produces the opposite effect from Orge, where the higher quantities are consistently more expensive than the lower ones.
 
-To quantify this phenomenon, we use a number I call alignment. Each item has two alignment values (processed after getting all prices down to a per unit basis): Alignment 1 (x10 price / x1 price) and Alignment 2 (x100 price / x10 price). If there were no costs of transaction such as time and limited item slots, all items would presumably have both alignments very close to 1. In reality, items like Orge have _low alignment_ (i.e. less than 1) while items like Eau have _high alignment_ (more than 1).
+To quantify this phenomenon, we use a number I call alignment. Each item has two alignment values (processed after getting all prices down to a per-unit basis):
+- Alignment 1 (x10 price / x1 price)
+- Alignment 2 (x100 price / x10 price)
+
+If there were no costs of transaction such as time and limited item slots, all items would presumably have both alignments very close to 1. In reality, items like Orge have _low alignment_ (i.e. less than 1) while items like Eau have _high alignment_ (more than 1).
+
+Studying an item's alignment allows one to make very safe profitable transactions. Knowing the alignment's stability (with data like the probability of being greater than 1 and the standard deviation of the alignment which are given by functions in the code) is especially helpful in planning large-scale alignment-based investments.
 
 ### Usage
 `dispalignment` gives detailed info on on both alignments of an item, and shows a plot of the alignments across time.
