@@ -81,5 +81,5 @@ To use this program effectively, my daily workflow while the project was on cons
   - Make a measurement of all prices with the bot.
   - Use `dashboard` to find any immediate profit opportunities.
 * Long-term investments
-  - Based on the output of `dashboard` and my running investment thoughts, select a few items which look promising.
-  - Study them with `study` to decide whether to invest and how.
+  - Based on the output of `dashboard` and a quick `disptails` or `multitails`, select a few items which look promising.
+  - Study them with `study` and `dispalignment` to decide whether to invest and how.
