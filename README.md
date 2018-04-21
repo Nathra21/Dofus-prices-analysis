@@ -14,7 +14,7 @@ The database is stored in prices.hdf5 as a pandas DataFrame and looks like this:
 | 2017-12-17 08:23:51 | 7.0 | 70.0 | 539.0 | 11.0 | 127.0 | 1095.0 | 33.0   | 70.0   | 345.0  |  ...   |
 | 2017-12-20 11:00:19 | 3.0 | 59.0 | 511.0 | 23.0 | 134.0 | 1500.0 | 3.0    | 19.0   | 143.0  |  ...   |
 
-Notice that the items' names are all in French, as this is the language I play the game in.
+The items' names are in French, as this is the language I play the game in.
 
 The columns index is a MultiIndex, with the first level being the item and the second being the quantity. Each item can be sold in packs of 1, 10 or 100 at the choice of the seller and the prices for the 3 quantities are independent, although obviously strongly linked because of the obvious arbitrage opportunity a difference between them represents.
 
