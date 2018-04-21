@@ -14,6 +14,8 @@ The database is stored in prices.hdf5 as a pandas DataFrame and looks like this:
 | 2017-12-17 08:23:51 | 7.0 | 70.0 | 539.0 | 11.0 | 127.0 | 1095.0 | 33.0   | 70.0   | 345.0  |  ...   |
 | 2017-12-20 11:00:19 | 3.0 | 59.0 | 511.0 | 23.0 | 134.0 | 1500.0 | 3.0    | 19.0   | 143.0  |  ...   |
 
+Notice that the items' names are all in French, as this is the language I play the game in.
+
 The columns index is a MultiIndex, with the first level being the item and the second being the quantity. Each item can be sold in packs of 1, 10 or 100 at the choice of the seller and the prices for the 3 quantities are independent, although obviously strongly linked because of the obvious arbitrage opportunity a difference between them represents.
 
 pricesanalysis.py is the file where all of my data analysis function for this database are coded. Here is a quick use guide for the most useful among them.
@@ -23,13 +25,17 @@ disptails(size=10, withmeans=True, items=headers, database=prices)
 ```
 Displays, for each item in `items`, its last `size` prices and its average unit price in `database`.
 
+## curve
+```python
+curve(items, freq='', aligned=True, database=prices, withmeans=True)
+```
+Plots the prices of `items` (list of items or single item) through time. `aligned` means that all prices will be in price per unit. `freq` allows you to resample the database first for smoothing purposes. By default, the three means will also be shown on the graph.
+
 ## dashboard
 ```python
 dashboard(withgraphs=False, freq='', alphasort=False, database=prices)
 ```
 Displays information about what prices have changed by more than 30% between the latest two measurements, with the option of resampling the prices first. For instance, `dashboard(freq='D')` would first resample `prices` by day and then show you what items have had their prices change by more than 30% between the last two days of measurement.
-
-_Sidenote: `dashboard(freq='D')` is equivalent to `dashboard(database=respl(prices, 'D'))`._
 
 I never use `alphasort` as I am very familiar with the default ordering (based on the bot's path through trading posts) but some people might find it more practical.
 
@@ -38,6 +44,11 @@ I never use `alphasort` as I am very familiar with the default ordering (based o
 dispalignment(item, bulk=2, database=prices, show=True)
 quickdispalignment(item)
 ```
+These two give you info on an item's _alignment_ through time.
+### What is alignment?
+Consider the following graph, given by using `curve('Orge')`
+
+### Usage
 
 ## study
 ```python
