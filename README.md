@@ -18,7 +18,8 @@ The columns index is a MultiIndex, with the first level being the item and the s
 
 pricesanalysis.py is the file where all of my data analysis function for this database are coded. Here is a quick use guide for the most useful among them.
 ## disptails
-Usage: ```python
+Usage:
+```python
 disptails(size=10, withmeans=True, items=headers, database=prices)
 ```
 
