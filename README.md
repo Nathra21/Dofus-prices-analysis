@@ -61,10 +61,10 @@ To quantify this phenomenon, we use a number I call alignment. Each item has two
 
 If there were no costs of transaction such as time and limited item slots, all items would presumably have both alignments very close to 1. In reality, items like Orge have _low alignment_ (i.e. less than 1) while items like Eau have _high alignment_ (more than 1).
 
-Studying an item's alignment allows one to make very safe profitable transactions. Knowing the alignment's stability (with data like the probability of being greater than 1 and the standard deviation of the alignment which are given by functions in the code) is especially helpful in planning large-scale alignment-based investments.
+Studying an item's alignment allows one to make very safe profitable transactions. Knowing the alignment's stability (with data like the probability of being greater than 1 and the standard deviation of the alignment, which are given by functions in `pricesanalysis.py`) is especially helpful in planning large-scale alignment-based investments.
 
 ### Usage
-`dispalignment` gives detailed info on on both alignments of an item, and shows a plot of the alignments across time.
+`dispalignment` gives detailed info on both alignments of an item, and shows a plot of the alignments across time.
 One useful detail it gives is the percentage of the time they are above 1, which is a good indicator of the consistency of the alignment.
 
 For instance, Eau has an A2 average of 1.33 and its A2 is greater than 1 about 89% of the time.
@@ -73,7 +73,7 @@ For instance, Eau has an A2 average of 1.33 and its A2 is greater than 1 about 8
 ```python
 study(items)
 ```
-Shows various useful pieces of information about `items`, such as recent prices on different timescales and alignment information.
+Shows various useful pieces of information about `items`, such as recent prices on different timescales and basic alignment information.
 
 ## Everyday use
 
