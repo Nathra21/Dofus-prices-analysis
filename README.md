@@ -1,6 +1,6 @@
 # Prices analysis in Dofus
 
-This is a personal project conducted over two months, powered by a price-retrieving bot I made for the online MMORPG Dofus.
+This is a personal project conducted over two months, powered by a price-retrieving bot I made for the MMORPG Dofus.
 I used this bot to create a database of prices for 44 items, collected at 929 points in time.
 
 The database is stored in `prices.hdf5` as a pandas DataFrame and looks like this:
