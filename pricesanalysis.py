@@ -146,8 +146,8 @@ def curve(items, freq='', aligned=True, database=prices, withmeans=True):
             to_plot.loc[:, 'x10'] = to_plot.loc[:, 'x10'] / 10
             to_plot.loc[:, 'x100'] = to_plot.loc[:, 'x100'] / 100
 
+        plt.rcParams["figure.figsize"] = (11,7)
         to_plot.plot(title=item)
-
         if withmeans:
             mean1 = getmean(to_plot.loc[:, 'x1'])
             mean10 = getmean(to_plot.loc[:, 'x10'])
@@ -155,6 +155,7 @@ def curve(items, freq='', aligned=True, database=prices, withmeans=True):
             plt.axhline(y=mean1, color='C0', linestyle=':')
             plt.axhline(y=mean10, color='C1', linestyle=':')
             plt.axhline(y=mean100, color='C2', linestyle=':')
+        plt.savefig('output.png')
         plt.show()
 
 
@@ -162,7 +163,7 @@ def disptails(size=10, withmeans=True, items=headers, database=prices):
     # Displays the last prices of passed items.
     for item in items:
         to_display = database.loc[:, item]
-        mean = getmean(database.loc[:, (item, 'x100')])
+        mean = getmean(complete(database, backfill=False).loc[:, (item, 'x100')])
         print('\n\n' + item + '\t\t\t\t' + str(mean))
         displayDF(to_display.tail(size))
 
@@ -194,7 +195,7 @@ def getheaders(df):
     # Returns the first-level headers of a DataFrame with MultiIndex columns.
     return list(dict.fromkeys(df.columns.get_level_values(0)))
 
-def complete(database=prices):
+def complete(database=prices, backfill=True):
     # Fills missing price data using other quantities and later measurements.
     for i in getheaders(database):
         database.loc[:, (i, 'x10')].fillna(
@@ -207,7 +208,8 @@ def complete(database=prices):
             database.loc[:, (i, 'x10')] * 10, inplace=True)
         database.loc[:, (i, 'x100')].fillna(
             database.loc[:, (i, 'x1')] * 100, inplace=True)
-    database.fillna(method='bfill', inplace=True)
+    if backfill:
+        database.fillna(method='bfill', inplace=True)
 
     return database
 
@@ -285,11 +287,11 @@ def alignmentpercent(item, bulk=2, database=prices):
             item,
             bulk=bulk,
             database=database),
-        freq='T')
+        freq='T').dropna()
     return resampled.apply(lambda x: 1 if x >= 1 else 0).mean()
 
 
-def dispalignment(item, bulk=2, database=prices, show=True):
+def alignmentinfo(item, bulk=2, database=prices, show=True):
     alignment = alignmentsrs(item, bulk=bulk, database=database)
 
     resampled = respl(alignment, freq='T').dropna()
@@ -312,6 +314,14 @@ def dispalignment(item, bulk=2, database=prices, show=True):
     plt.axhline(y=1, color='grey')
     if show:
         plt.show()
+
+
+def dispalignment(item):
+    # Shows the item's line in stdtable, and info on both its alignments.
+    stdtable(database=prices.loc[:, (item, slice(None))])
+    print('\n\n')
+    alignmentinfo(item, 2, show=False)
+    alignmentinfo(item, 1)
 
 
 def align(df=prices):
@@ -371,14 +381,6 @@ def stdtable(show=True, database=prices):
             )
         )
     return table
-
-
-def dispalignmentinfo(item):
-    # Shows the item's line in stdtable, and info on both its alignments.
-    stdtable(database=prices.loc[:, (item, slice(None))])
-    print('\n\n')
-    dispalignment(item, 2, show=False)
-    dispalignment(item, 1)
 
 
 def alignmentstdtable():
@@ -472,3 +474,7 @@ def dispweekendtable():
     with pd.option_context('display.max_rows', 1000):
         print(df)
 
+
+
+if __name__ == "__main__":
+    dashboard()
