@@ -48,6 +48,10 @@ These two give you info on an item's _alignment_ through time.
 ### What is alignment?
 Consider the following graph, given by using `curve('Orge')`:
 ![Orge curve](Orge_curve.jpeg)
+It is clear that the higher quantities are sold for a consistently higher price than the lower quantities. The reason for that is the cost of selling Orge in low quantities, in terms of time and trading post slots. This is an item that sellers have in high quantities (they harvest hundreds before selling them), but that buyers sometimes want in low quantities.
+
+This graph, given by using `curve('Houblon')`, shows the rarer opposite case:
+
 
 ### Usage
 
