@@ -47,7 +47,7 @@ quickdispalignment(item)
 These two give you info on an item's _alignment_ through time.
 ### What is alignment?
 Consider the following graph, given by using `curve('Orge')`:
-![Orge curve](../master/orge_curve.jpeg)
+![Orge curve](Orge_curve.jpeg)
 
 ### Usage
 
