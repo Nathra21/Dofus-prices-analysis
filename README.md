@@ -73,3 +73,13 @@ For instance, Eau has an A2 average of 1.33 and its A2 is greater than 1 about 8
 study(items)
 ```
 Shows various useful pieces of information about `items`, such as recent prices on different timescales and alignment information.
+
+## Everyday use
+
+To use this program effectively, my daily workflow while the project was on consisted of two phases:
+* Short-term investments
+  1. Making a measurement of all prices with the bot
+  2. Using `dashboard` to find any immediate profit opportunities
+* Long-term investments
+  1. Based on the output of `dashboard` and my running investment thoughts, select a few items which look promising
+  2. Study them with `study` to decide whether to invest and how.
