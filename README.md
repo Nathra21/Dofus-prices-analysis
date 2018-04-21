@@ -27,7 +27,7 @@ Displays, for each item in `items`, its last `size` prices and their average pri
 ```python
 dashboard(withgraphs=False, freq='', alphasort=False, database=prices)
 ```
-Displays information about what prices have changed by more than 30% between the latest two measurements, with the option of resampling the prices first. For instance, `dashboard(freq='D')`{.python} would first resample `prices` by day and then show you what items have had their prices change by more than 30% between the last two days of measurement.
+Displays information about what prices have changed by more than 30% between the latest two measurements, with the option of resampling the prices first. For instance, `dashboard(freq='D')`{:.python} would first resample `prices` by day and then show you what items have had their prices change by more than 30% between the last two days of measurement.
 
 ## dispalignment / quickdispalignment
 ```python
