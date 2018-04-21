@@ -47,7 +47,7 @@ def changed(threshold=.3, database=prices, withquants=False):
     have_changed = []
     database = database.iloc[[-2, -1], :]
     for i in getheaders(database):
-        for j in quants:
+        for j in ['x1', 'x10', 'x100']:
             variation = (
                 database.loc[:, (i, j)].diff()[-1]
                 / database.loc[:, (i, j)][-2]
@@ -214,7 +214,7 @@ def stdtable(show=True, database=prices):
     for item in getheaders(database):
         db = align(prices.loc[:, item])
         line = [item]
-        for j in quants:
+        for j in ['x1', 'x10', 'x100']:
             line.append(format(normalizesrs(db.loc[:, j]).std(), '.2f'))
         alignments = [alignmentmean(item, 1), alignmentmean(item, 2)]
         line.append(format(alignments[0], '.2f'))
