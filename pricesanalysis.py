@@ -1,128 +1,110 @@
-import re
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 
-Bulkdict = {
-    'Blé': 'x100',
-    'Orge': 'x100',
-    'Avoine': 'x100',
-    'Houblon': 'x100',
-    'Eau': 'x100',
-    'Bave': 'x10',
-    'Laine': 'x100',
-    'Laine noir': 'x10',
-    'Laine céleste': 'x10',  # Maybe 100
-    'Volve': 'x100',
-    'Cuir bouf': 'x100',
-    'Cuir cdg': 'x10',
-    'Graine': 'x100',
-    'Poudre perl': 'x10',  # Maybe 100
-    'Peau gloot': 'x100',
-    'Queue chap': 'x100',
-    'Cendres': 'x100',
-    'Relique': 'x100',
-    'Mini soin': 'x100',
-    'Mini soin sup': 'x10',
-    'Raide dite': 'x100',
-    'Soin': 'x',
-    'Ghetto raide': 'x',
-    'Soin sup': 'x',
-    'Clef champs': 'x',
-    'Clef sable': 'x',
-    'Clef bouf': 'x',
-    'Clef kank': 'x',
-    'Clef fant': 'x',
-    'Clef scara': 'x',
-    'Clef squel': 'x',
-    'Clef tofus': 'x',
-    'Clef gh': 'x',
-    'Clef bulbes': 'x',
-    'Clef bworks': 'x',
-    'Clef forg': 'x',
-    'Clef kwa': 'x',
-    'Clef wa': 'x',
-    'Clef blops': 'x',
-    'Clef kanni': 'x',
-    'Abreuvoir fr': 'x1',
-    'Baffeur fr': 'x1',
-    'Foudroyeur fr': 'x1',
-    'Recycleur': 'x1'
-}
-
-
-headers = [
-    'Blé',
-    'Orge',
-    'Avoine',
-    'Houblon',
-    'Eau',
-    'Bave',
-    'Laine',
-    'Laine noir',
-    'Laine céleste',
-    'Volve',
-    'Cuir bouf',
-    'Cuir cdg',
-    'Graine',
-    'Poudre perl',
-    'Peau gloot',
-    'Queue chap',
-    'Cendres',
-    'Relique',
-    'Mini soin',
-    'Mini soin sup',
-    'Raide dite',
-    'Soin',
-    'Ghetto raide',
-    'Soin sup',
-    'Clef champs',
-    'Clef sable',
-    'Clef bouf',
-    'Clef kank',
-    'Clef fant',
-    'Clef scara',
-    'Clef squel',
-    'Clef tofus',
-    'Clef gh',
-    'Clef bulbes',
-    'Clef bworks',
-    'Clef forg',
-    'Clef kwa',
-    'Clef wa',
-    'Clef blops',
-    'Clef kanni',
-    'Abreuvoir fr',
-    'Baffeur fr',
-    'Foudroyeur fr',
-    'Recycleur']
-quants = ['x1', 'x10', 'x100']
-
-alchimistes = [
-    'Mini soin',
-    'Mini soin sup',
-    'Raide dite',
-    'Soin',
-    'Ghetto raide',
-    'Soin sup']
-ressources = [
-    'Eau',
-    'Bave',
-    'Laine',
-    'Laine noir',
-    'Laine céleste',
-    'Volve',
-    'Cuir bouf',
-    'Cuir cdg',
-    'Graine',
-    'Poudre perl',
-    'Peau gloot',
-    'Queue chap',
-    'Cendres',
-    'Relique']
-
 prices = pd.read_hdf('prices.hdf5', 'df')
+
+def getheaders(df):
+    # Returns the first-level headers of a DataFrame with MultiIndex columns.
+    return list(dict.fromkeys(df.columns.get_level_values(0)))
+
+itemslist = getheaders(prices)
+
+
+def respl(df=prices, freq='D', interpolate=True):
+    '''Resamples a date-indexed DataFrame or Series by
+    first sampling up (to a minute) then down to the desired frequency.
+    '''
+    resampled = df.resample('T').sum().resample(freq).median()
+    if interpolate:
+        resampled = resampled.interpolate()
+    return resampled
+
+
+def complete(database=prices, backfill=True):
+    # Fills missing price data using other quantities and later measurements.
+    for i in getheaders(database):
+        database.loc[:, (i, 'x10')].fillna(
+            database.loc[:, (i, 'x100')] / 10, inplace=True)
+        database.loc[:, (i, 'x10')].fillna(
+            database.loc[:, (i, 'x1')] * 10, inplace=True)
+        database.loc[:, (i, 'x1')].fillna(
+            database.loc[:, (i, 'x10')] / 10, inplace=True)
+        database.loc[:, (i, 'x100')].fillna(
+            database.loc[:, (i, 'x10')] * 10, inplace=True)
+        database.loc[:, (i, 'x100')].fillna(
+            database.loc[:, (i, 'x1')] * 100, inplace=True)
+    if backfill:
+        database.fillna(method='bfill', inplace=True)
+
+    return database
+
+def changed(threshold=.3, database=prices, withquants=False):
+    '''Return the list of items whose prices have changed by more than
+    the specified threshold.
+    '''
+    have_changed = []
+    database = database.iloc[[-2, -1], :]
+    for i in getheaders(database):
+        for j in quants:
+            variation = (
+                database.loc[:, (i, j)].diff()[-1]
+                / database.loc[:, (i, j)][-2]
+            )
+            if abs(variation) >= threshold:
+                if withquants:
+                    have_changed.append((i, j, variation))
+                else:
+                    have_changed.append(i)
+    return have_changed
+
+
+def getmean(srs, freq='T'):
+    # Returns the mean of a Series of prices.
+    return srs.resample(freq).sum().interpolate().mean()
+
+
+def alignmentsrs(item, bulk=2, database=prices):
+    # Returns a Series containing an item's alignment through time.
+    df = database.loc[:, item]
+    return df.apply(lambda x: x[bulk] / (x[bulk - 1] * 10), axis=1)
+
+
+def alignmentmean(item, bulk=2, database=prices):
+    # Returns the average alignment of a specified item.
+    return getmean(alignmentsrs(item, bulk=bulk, database=database))
+
+
+def alignmentpercent(item, bulk=2, database=prices):
+    # Returns what proportion of the time the item's alignment is above 1.
+    resampled = respl(
+        alignmentsrs(
+            item,
+            bulk=bulk,
+            database=database),
+        freq='T').dropna()
+    return resampled.apply(lambda x: 1 if x >= 1 else 0).mean()
+
+
+def align(df=prices):
+    # Brings all prices down to a per-unit price.
+    if isinstance(df.columns, pd.MultiIndex): # If several items are passed
+        df.loc[:, (slice(None), 'x10')] = df.loc[:,
+                            (slice(None), 'x10')].applymap(lambda x: x / 10)
+        df.loc[:, (slice(None), 'x100')] = df.loc[:,
+                            (slice(None), 'x100')].applymap(lambda x: x / 100)
+    else:
+        df.loc[:, 'x10'] = df.loc[:, 'x10'].apply(lambda x: x / 10)
+        df.loc[:, 'x100'] = df.loc[:, 'x100'].apply(lambda x: x / 100) 
+    return df
+
+
+def normalizesrs(srs):
+    # Normalizes a series using its mean (for comparing item variability).
+    mean = getmean(srs)
+    return srs.apply(lambda x: x / mean)
+
 
 
 def displayDF(x):
@@ -130,11 +112,12 @@ def displayDF(x):
     print(tabulate(x, headers=x.columns.values))
 
 
-def getmean(srs, freq='T'):
-    return srs.resample(freq).sum().interpolate().mean()
-
-
 def curve(items, freq='', aligned=True, database=prices, withmeans=True):
+    '''Plots the prices of items (list of items or single item) through time.
+    aligned means that all prices will be in price per unit.
+    freq allows you to resample the database first for smoothing purposes.
+    By default, the three means will also be shown on the graph.
+    '''
     if not isinstance(items, list):
         items = [items]
     if freq:
@@ -159,8 +142,8 @@ def curve(items, freq='', aligned=True, database=prices, withmeans=True):
         plt.show()
 
 
-def disptails(size=10, withmeans=True, items=headers, database=prices):
-    # Displays the last prices of passed items.
+def disptails(size=10, withmeans=True, items=itemslist, database=prices):
+    # Displays the last prices of the specified items.
     for item in items:
         to_display = database.loc[:, item]
         mean = getmean(complete(database, backfill=False).loc[:, (item, 'x100')])
@@ -168,7 +151,8 @@ def disptails(size=10, withmeans=True, items=headers, database=prices):
         displayDF(to_display.tail(size))
 
 
-def multitails(size=10, withmeans=True, items=headers, database=prices):
+def multitails(size=10, withmeans=True, items=itemslist, database=prices):
+    # Similar to disptails but also including daily and hourly prices.
     resampled1 = respl(database, 'H')
     resampled2 = respl(database, 'D')
     for item in items:
@@ -180,55 +164,6 @@ def multitails(size=10, withmeans=True, items=headers, database=prices):
         mean = getmean(database.loc[:, (item, 'x100')])
         print('\n\n' + item + '\t\t\t\t' + str(mean))
         displayDF(to_display)
-
-
-def respl(df=prices, freq='D', interpolate=True):
-    '''Resamples a date-indexed DataFrame or Series
-    by first sampling up (to a minute) then down to the desired frequency.
-    '''
-    resampled = df.resample('T').sum().resample(freq).median()
-    if interpolate:
-        resampled = resampled.interpolate()
-    return resampled
-
-def getheaders(df):
-    # Returns the first-level headers of a DataFrame with MultiIndex columns.
-    return list(dict.fromkeys(df.columns.get_level_values(0)))
-
-def complete(database=prices, backfill=True):
-    # Fills missing price data using other quantities and later measurements.
-    for i in getheaders(database):
-        database.loc[:, (i, 'x10')].fillna(
-            database.loc[:, (i, 'x100')] / 10, inplace=True)
-        database.loc[:, (i, 'x10')].fillna(
-            database.loc[:, (i, 'x1')] * 10, inplace=True)
-        database.loc[:, (i, 'x1')].fillna(
-            database.loc[:, (i, 'x10')] / 10, inplace=True)
-        database.loc[:, (i, 'x100')].fillna(
-            database.loc[:, (i, 'x10')] * 10, inplace=True)
-        database.loc[:, (i, 'x100')].fillna(
-            database.loc[:, (i, 'x1')] * 100, inplace=True)
-    if backfill:
-        database.fillna(method='bfill', inplace=True)
-
-    return database
-
-
-def changed(threshold=.3, database=prices, withquants=False):
-    have_changed = []
-    database = database.iloc[[-2, -1], :]
-    for i in getheaders(database):
-        for j in quants:
-            variation = (
-                database.loc[:, (i, j)].diff()[-1]
-                / database.loc[:, (i, j)][-2]
-            )
-            if abs(variation) >= threshold:
-                if withquants:
-                    have_changed.append((i, j, variation))
-                else:
-                    have_changed.append(i)
-    return have_changed
 
 
 def changetable():
@@ -269,79 +204,6 @@ def dashboard(withgraphs=False, freq='', alphasort=False, database=prices):
 
     if withgraphs:
         curve(list(dict.fromkeys(of_interest)), database=database)
-
-
-def alignmentsrs(item, bulk=2, database=prices):
-    df = database.loc[:, item]
-    return df.apply(lambda x: x[bulk] / (x[bulk - 1] * 10), axis=1)
-
-
-def alignmentmean(item, bulk=2, database=prices):
-    return getmean(alignmentsrs(item, bulk=bulk, database=database))
-
-
-def alignmentpercent(item, bulk=2, database=prices):
-    # Returns what proportion of the time the item's alignment is above 1
-    resampled = respl(
-        alignmentsrs(
-            item,
-            bulk=bulk,
-            database=database),
-        freq='T').dropna()
-    return resampled.apply(lambda x: 1 if x >= 1 else 0).mean()
-
-
-def alignmentinfo(item, bulk=2, database=prices, show=True):
-    alignment = alignmentsrs(item, bulk=bulk, database=database)
-
-    resampled = respl(alignment, freq='T').dropna()
-    percent = resampled.apply(lambda x: 1 if x < 1 else 0).mean()
-
-    infotext = (item
-        + ' alignment '
-        + str(bulk)
-        + ' description (resampled by minute): \n'
-        + '\n'.join(str(resampled.describe()).split('\n')[:-1])
-        + '\n\nAbove 1: '
-        + format(1 - percent, '.0%')
-        + '\nBelow 1: '
-        + format(percent, '.0%')
-        )
-
-    print(infotext + '\n')
-
-    alignment.plot(title=item + ' alignment')
-    plt.axhline(y=1, color='grey')
-    if show:
-        plt.show()
-
-
-def dispalignment(item):
-    # Shows the item's line in stdtable, and info on both its alignments.
-    stdtable(database=prices.loc[:, (item, slice(None))])
-    print('\n\n')
-    alignmentinfo(item, 2, show=False)
-    alignmentinfo(item, 1)
-
-
-def align(df=prices):
-    '''Brings all prices down to a per-unit price,
-    both for one-item and multiple-items DataFrames.
-    '''
-    if isinstance(df.columns, pd.MultiIndex): # If several items are passed
-        df.loc[:, (slice(None), 'x10')] = df.loc[:,
-                            (slice(None), 'x10')].applymap(lambda x: x / 10)
-        df.loc[:, (slice(None), 'x100')] = df.loc[:,
-                            (slice(None), 'x100')].applymap(lambda x: x / 100)
-    else:
-        df.loc[:, 'x10'] = df.loc[:, 'x10'].apply(lambda x: x / 10)
-        df.loc[:, 'x100'] = df.loc[:, 'x100'].apply(lambda x: x / 100) 
-    return df
-
-
-def normalizesrs(srs):
-    mean = getmean(srs)
-    return srs.apply(lambda x: x / mean)
 
 
 def stdtable(show=True, database=prices):
@@ -388,7 +250,7 @@ def alignmentstdtable():
     alignments and the ratio of the second alignment's std to the first's.
     '''
     table = []
-    for item in headers:
+    for item in itemslist:
         line = [item]
         for bulk in [1, 2]:
             df = prices.loc[:, item]
@@ -404,8 +266,44 @@ def alignmentstdtable():
     print(tabulate(table, headers=['Item', 'Al_1 std', 'Al_2 std', 'Ratio']))
 
 
+def alignmentinfo(item, bulk=2, database=prices, show=True):
+    # Displays info on one of an item's two alignments and shows a graph of it.
+    alignment = alignmentsrs(item, bulk=bulk, database=database)
+
+    resampled = respl(alignment, freq='T').dropna()
+    percent = resampled.apply(lambda x: 1 if x < 1 else 0).mean()
+
+    infotext = (item
+        + ' alignment '
+        + str(bulk)
+        + ' description (resampled by minute): \n'
+        + '\n'.join(str(resampled.describe()).split('\n')[:-1])
+        + '\n\nAbove 1: '
+        + format(1 - percent, '.0%')
+        + '\nBelow 1: '
+        + format(percent, '.0%')
+        )
+
+    print(infotext + '\n')
+
+    alignment.plot(title=item + ' alignment')
+    plt.axhline(y=1, color='grey')
+    if show:
+        plt.show()
+
+
+def dispalignment(item):
+    # Shows the item's line in stdtable, and info on both its alignments.
+    stdtable(database=prices.loc[:, (item, slice(None))])
+    print('\n\n')
+    alignmentinfo(item, 2, show=False)
+    alignmentinfo(item, 1)
+
+
 def study(items):
-    # Shows various useful pieces of information about a list of items.
+    '''Shows various useful pieces of information about a items, such as
+    recent prices on different timescales and alignment information.
+    '''
     if not isinstance(items, list):
         items = [items]
 
