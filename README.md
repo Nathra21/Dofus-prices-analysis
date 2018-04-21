@@ -60,7 +60,7 @@ To quantify this phenomenon, we use a number I call alignment. Each item has two
 `dispalignment` gives detailed info on on both alignments of an item, and shows a plot of the alignments across time.
 One useful detail it gives is the percentage of the time they are above 1, which is a good indicator of the consistency of the alignment.
 
-For instance, Eau has an A2 average of 1.33 and its A2 is above 1 89% of the time.
+For instance, Eau has an A2 average of 1.33 and its A2 is greater than 1 about 89% of the time.
 
 ## study
 ```python
