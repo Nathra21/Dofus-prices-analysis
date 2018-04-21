@@ -48,7 +48,7 @@ This gives info on an item's _alignment_ through time.
 ### What is alignment?
 Consider the following graph, given by using `curve('Orge')`:
 ![Orge curve](orge_curve.png)
-It is clear that the lower quantities are sold for a consistently higher price than the higher quantities. The reason for that is the high cost of selling Orge (barley) in low quantities, in terms of time and trading post slots. This is an item that sellers have in high quantities (they harvest hundreds of units before selling them), but that buyers sometimes want in low quantities.
+You may notice that the lower quantities are sold for a consistently higher price than the higher quantities. The reason for that is the high cost of selling Orge (barley) in low quantities, in terms of time and trading post slots. This is an item that sellers have in high quantities (they harvest hundreds of units before selling them), but that buyers sometimes want in low quantities.
 
 This graph, given by using `curve('Eau')`, shows the (more common) opposite case:
 ![Eau curve](eau_curve.png)
