@@ -66,4 +66,4 @@ For instance, Eau has an A2 average of 1.33 and its A2 is greater than 1 about 8
 ```python
 study(items)
 ```
-Shows various useful pieces of information about `items`, such as recent prices on different timescales, and alignment information.
+Shows various useful pieces of information about `items`, such as recent prices on different timescales and alignment information.
