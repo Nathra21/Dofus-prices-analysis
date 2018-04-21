@@ -21,13 +21,15 @@ pricesanalysis.py is the file where all of my data analysis function for this da
 ```python
 disptails(size=10, withmeans=True, items=headers, database=prices)
 ```
-Displays, for each item in `items`, its last `size` prices and their average price.
+Displays, for each item in `items`, its last `size` prices and its average unit price in `database`.
 
 ## dashboard
 ```python
 dashboard(withgraphs=False, freq='', alphasort=False, database=prices)
 ```
 Displays information about what prices have changed by more than 30% between the latest two measurements, with the option of resampling the prices first. For instance, `dashboard(freq='D')` would first resample `prices` by day and then show you what items have had their prices change by more than 30% between the last two days of measurement.
+_Sidenote: `dashboard(freq='D')` is equivalent to `dashboard(database=respl(prices, 'D'))`._
+I never use `alphasort` as I am very familiar with the default ordering (based on the bot's path through trading posts) but some people might find it more practical.
 
 ## dispalignment / quickdispalignment
 ```python
