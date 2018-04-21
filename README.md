@@ -39,23 +39,31 @@ Displays information about what prices have changed by more than 30% between the
 
 I never use `alphasort` as I am very familiar with the default ordering (based on the bot's path through trading posts) but some people might find it more practical.
 
-## dispalignment / quickdispalignment
+## dispalignment
 ```python
-dispalignment(item, bulk=2, database=prices, show=True)
-quickdispalignment(item)
+dispalignment(item)
 ```
-These two give you info on an item's _alignment_ through time.
+This gives info on an item's _alignment_ through time.
+
 ### What is alignment?
 Consider the following graph, given by using `curve('Orge')`:
-![Orge curve](Orge_curve.jpeg)
-It is clear that the higher quantities are sold for a consistently higher price than the lower quantities. The reason for that is the cost of selling Orge in low quantities, in terms of time and trading post slots. This is an item that sellers have in high quantities (they harvest hundreds before selling them), but that buyers sometimes want in low quantities.
+![Orge curve](orge_curve.png)
+It is clear that the lower quantities are sold for a consistently higher price than the higher quantities. The reason for that is the high cost of selling Orge (barley) in low quantities, in terms of time and trading post slots. This is an item that sellers have in high quantities (they harvest hundreds of units before selling them), but that buyers sometimes want in low quantities.
 
-This graph, given by using `curve('Houblon')`, shows the rarer opposite case:
+This graph, given by using `curve('Eau')`, shows the (more common) opposite case:
+![Eau curve](eau_curve.png)
+In this case, since Eau (water) can only be harvested in small quantities at wells, most sellers only have them in small quantities. On the other hand, water is necessary for many potion recipes, which means that alchemists buy water in very large quantities. This produces the opposite effect from Orge, where the higher quantities are consistently more expensive than the lower ones.
 
+To quantify this phenomenon, we use a number I call alignment. Each item has two alignment values (processed after getting all prices down to a per unit basis): Alignment 1 (x10 price / x1 price) and Alignment 2 (x100 price / x10 price). If there were no costs of transaction such as time and limited item slots, all items would presumably have both alignments very close to 1. In reality, items like Orge have _low alignment_ (i.e. less than 1) while items like Eau have _high alignment_ (more than 1).
 
 ### Usage
+`dispalignment` gives detailed info on on both alignments of an item, and shows a plot of the alignments across time.
+One useful detail it gives is the percentage of the time they are above 1, which is a good indicator of the consistency of the alignment.
+
+For instance, Eau has an A2 average of 1.33 and its A2 is above 1 89% of the time.
 
 ## study
 ```python
 study(items)
 ```
+Shows various useful pieces of information about `items`, such as recent prices on different timescales, and alignment information.
