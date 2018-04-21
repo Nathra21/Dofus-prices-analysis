@@ -18,13 +18,24 @@ The columns index is a MultiIndex, with the first level being the item and the s
 
 pricesanalysis.py is the file where all of my data analysis function for this database are coded. Here is a quick use guide for the most useful among them.
 ## disptails
-Usage:
 ```python
 disptails(size=10, withmeans=True, items=headers, database=prices)
 ```
+Displays, for each item in `items`, its last `size` prices and their average price.
 
 ## dashboard
+```python
+dashboard(withgraphs=False, freq='', alphasort=False, database=prices)
+```
+Displays information about what prices have changed by more than 30% between the latest two measurements, with the option of resampling the prices first. For instance, `dashboard(freq='D')`{.python} would first resample `prices` by day and then show you what items have had their prices change by more than 30% between the last two days of measurement.
 
 ## dispalignment / quickdispalignment
+```python
+dispalignment(item, bulk=2, database=prices, show=True)
+quickdispalignment(item)
+```
 
 ## study
+```python
+study(items)
+```
